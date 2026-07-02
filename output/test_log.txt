@@ -1,0 +1,18 @@
+=== Python execution log ===
+Timestamp: 27/06/2026 11:00:38
+Command: cmd.exe /c ""C:\Users\anaar\AppData\Local\Programs\Python\Python311\Scripts\pytest.exe" "G:\Otros ordenadores\Mi PC\Documentos PC DAAAE\Secretaria General\Docentes Nombrados\src\test\test_trait.py" "G:\Otros ordenadores\Mi PC\Documentos PC DAAAE\Secretaria General\Docentes Nombrados" "BORRADOR PROYECCION 23 AÑOS DOCENTES NOMBRADOS.xlsm" "data_test"
+
+------ STDOUT ------
+============================= test session starts =============================
+platform win32 -- Python 3.11.4, pytest-9.1.1, pluggy-1.6.0
+rootdir: G:\Otros ordenadores\Mi PC\Documentos PC DAAAE\Secretaria General\Docentes Nombrados
+plugins: anyio-3.7.0
+collected 0 items
+
+============================ no tests ran in 0.04s ============================
+
+
+------ STDERR ------
+ERROR: file or directory not found: BORRADOR PROYECCION 23 AÑOS DOCENTES NOMBRADOS.xlsm
+
+

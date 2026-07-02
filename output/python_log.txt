@@ -1,0 +1,9 @@
+=== Python execution log ===
+Timestamp: 30/06/2026 17:38:29
+Command: cmd.exe /c ""C:\Users\a.arashiro\AppData\Local\Programs\Python\Python311\python.exe" "D:\Documentos PC DAAAE\Secretaria General\Docentes Nombrados\main.py" "D:\Documentos PC DAAAE\Secretaria General\Docentes Nombrados" "BORRADOR PROYECCION 23 AÑOS DOCENTES NOMBRADOS.xlsm" "datos"
+
+------ STDOUT ------
+(no stdout)
+
+------ STDERR ------
+(no stderr)
