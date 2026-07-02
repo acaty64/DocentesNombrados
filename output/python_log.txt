@@ -1,6 +1,6 @@
 === Python execution log ===
-Timestamp: 30/06/2026 17:38:29
-Command: cmd.exe /c ""C:\Users\a.arashiro\AppData\Local\Programs\Python\Python311\python.exe" "D:\Documentos PC DAAAE\Secretaria General\Docentes Nombrados\main.py" "D:\Documentos PC DAAAE\Secretaria General\Docentes Nombrados" "BORRADOR PROYECCION 23 AÑOS DOCENTES NOMBRADOS.xlsm" "datos"
+Timestamp: 2/07/2026 11:16:39
+Command: cmd.exe /c ""C:\Users\a.arashiro\AppData\Local\Programs\Python\Python311\python.exe" "D:\Documentos PC DAAAE\Secretaria General\DocentesNombrados\main.py" "D:\Documentos PC DAAAE\Secretaria General\DocentesNombrados" "BORRADOR PROYECCION 23 AÑOS DOCENTES NOMBRADOS.xlsm" "datos"
 
 ------ STDOUT ------
 (no stdout)

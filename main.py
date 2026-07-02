@@ -22,12 +22,14 @@ def main(ruta, archivo, hoja):
     if trait.verifica_tipo(df) == False:
         print("Error, revisar la columna TIPO, hay información errada.")
         return False
-    
-    # Eliminar registros con TIPO = REN, CES, REA, NRA, LIC, CDE
-    df_FILTRADO = df[~df['TIPO'].isin(['REN', 'CES', 'REA', 'NRA', 'LIC', 'CDE', 'PRO'])].copy()
+
+    df = trait.agrega_fechas_calculo(df)
 
     # Filtra registros con TIPO = PRO 
     df_PRO = df[df['TIPO'].isin(['PRO'])].copy()
+
+    # Eliminar registros con TIPO = REN, CES, REA, NRA, LIC, CDE, PRO
+    df_FILTRADO = df[~df['TIPO'].isin(['REN', 'CES', 'REA', 'NRA', 'LIC', 'CDE', 'PRO'])].copy()
 
     df_1 = trait.agregar_promociones(df_FILTRADO, df_PRO)
     if df_1.empty:
@@ -41,7 +43,7 @@ def main(ruta, archivo, hoja):
     # Filtra registros con TIPO = REN , CES, NRA 
     df_REN_CES = df[df['TIPO'].isin(['REN', 'CES', 'NRA'])].copy()
 
-    df_1 = trait.cambio_fin_de_periodo(df_FILTRADO, df_REN_CES)
+    df_1 = trait.cambio_fin_de_calculo(df_FILTRADO, df_REN_CES)
     if df_1.empty:
         return "Error, revisar registros TIPO: REN, CES, NRA."
 

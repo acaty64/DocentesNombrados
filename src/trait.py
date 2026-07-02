@@ -14,11 +14,16 @@ def campos():
               'INICIO DE PERIODO', 
               'FIN DE PERIODO']
 
+def agrega_fechas_calculo(df):
+    df['INICIO DE CALCULO'] = pd.to_datetime(df['INICIO DE PERIODO'], errors='coerce')  
+    df['FIN DE CALCULO'] = pd.to_datetime(df['FIN DE PERIODO'], errors='coerce')  
+    return df
+
 def calcular_duracion(row):
     try:
         # Verificar si hay valores NaT o None
-        INICIO = pd.to_datetime(row['INICIO DE PERIODO'], errors='coerce') - pd.to_timedelta(1, unit='D')
-        FIN = pd.to_datetime(row['FIN DE PERIODO'], errors='coerce')
+        INICIO = pd.to_datetime(row['INICIO DE CALCULO'], errors='coerce') - pd.to_timedelta(1, unit='D')
+        FIN = pd.to_datetime(row['FIN DE CALCULO'], errors='coerce')
 
         delta = relativedelta(FIN, INICIO)
         return pd.Series({
@@ -53,7 +58,7 @@ def agregar_promociones(df_1, df_2):
                 num_reg = matched['NUM_REGISTRO']
                 if num_reg in df_FILTRADO.index:
                     df_FILTRADO.loc[num_reg, 'TIPO2'] = registro['TIPO']
-                    df_FILTRADO.loc[num_reg, 'FIN DE PERIODO'] = pd.to_datetime(registro['INICIO DE PERIODO'], errors='coerce') - pd.to_timedelta(1, unit='D')
+                    df_FILTRADO.loc[num_reg, 'FIN DE CALCULO'] = pd.to_datetime(registro['INICIO DE PERIODO'], errors='coerce') - pd.to_timedelta(1, unit='D')
                     nuevos_promocion.append(registro.to_dict())
 
     if nuevos_promocion:
@@ -65,7 +70,7 @@ def agregar_promociones(df_1, df_2):
 
     return df_FILTRADO
 
-def cambio_fin_de_periodo(df_1, df_2):
+def cambio_fin_de_calculo(df_1, df_2):
 
     # Eliminar registros con TIPO = REN, CES, REA, NRA, LIC, CDE
     # df_FILTRADO = df[~df['TIPO'].isin(['REN', 'CES', 'REA', 'NRA', 'LIC', 'CDE'])].copy()
@@ -90,8 +95,8 @@ def cambio_fin_de_periodo(df_1, df_2):
         if not registros_con_fecha.empty:
             registros_con_fecha = registros_con_fecha.copy()
             registros_con_fecha['TIPO_REN_CES'] = registro['TIPO']
-            registros_con_fecha['FIN_REN_CES'] = registro['FIN DE PERIODO']
-            registros_con_fecha['INICIO_REN_CES'] = registro['INICIO DE PERIODO']
+            registros_con_fecha['FIN_REN_CES'] = registro['FIN DE CALCULO']
+            registros_con_fecha['INICIO_REN_CES'] = registro['INICIO DE CALCULO']
             matched_rows.append(registros_con_fecha)
 
     if matched_rows:
@@ -101,7 +106,7 @@ def cambio_fin_de_periodo(df_1, df_2):
         
         # Verificar que la FECHA_INICIO del registro REN/CES sea igual a la FECHA_INICIO del registro coincidente en df_FILTRADO
         for _, row in df_matched.iterrows():
-            if row['INICIO DE PERIODO'] != row['INICIO_REN_CES']:
+            if row['INICIO DE CALCULO'] != row['INICIO_REN_CES']:
                 print(f"Advertencia: La fecha de inicio del registro REN/CES (CODIGO={row['CODIGO']}) no coincide con la fecha de inicio del registro en df_FILTRADO.")
                 return
 
@@ -110,7 +115,7 @@ def cambio_fin_de_periodo(df_1, df_2):
             num_reg = row['NUM_REGISTRO']
             if num_reg in df_FILTRADO.index:
                 df_FILTRADO.loc[num_reg, 'TIPO2'] = row['TIPO_REN_CES']
-                df_FILTRADO.loc[num_reg, 'FIN DE PERIODO'] = row['FIN_REN_CES']
+                df_FILTRADO.loc[num_reg, 'FIN DE CALCULO'] = row['FIN_REN_CES']
         # print("Se actualizaron los registros en df_FILTRADO.")
     else:
         print(f"No se encontraron coincidencias REN/CES en df_FILTRADO. CODIGO={row['CODIGO']}")
@@ -132,19 +137,6 @@ def acumulacion(df):
     return resultado
 
 def verifica_integridad_campos(df):
-    # campos_requeridos = [
-    #     'TIPO',
-    #     'CODIGO',
-    #     'APELLIDOS Y NOMBRES',
-    #     'FACULTAD',
-    #     'ASIGNATURA',
-    #     'CATEGORIA',
-    #     'DEDICACION',
-    #     'RESOLUCION',
-    #     'FECHA DE RESOLUCION',
-    #     'INICIO DE PERIODO',
-    #     'FIN DE PERIODO',
-    # ]
     campos_requeridos = campos()
 
     columnas = set(df.columns)
@@ -210,6 +202,8 @@ def registro_por_docente(df):
         'DEDICACION': 'last', 
         'INICIO DE PERIODO': 'min',
         'FIN DE PERIODO': 'max',
+        'INICIO DE CALCULO': 'min',
+        'FIN DE CALCULO': 'max',
         'AÑOS': 'sum',
         'MESES': 'sum',
         'DIAS': 'sum',
