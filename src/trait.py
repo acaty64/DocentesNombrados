@@ -39,19 +39,23 @@ def calcular_duracion(row):
             'DIAS': None
         })
 
-def agregar_promociones(df_1, df_2):
+def agregar_pro_cde(df_1, df_2):
     df_FILTRADO = df_1.copy()
     df_PRO = df_2
 
     nuevos_promocion = []
 
-    # Por cada registro con TIPO = PRO, identificar registros con el mismo CODIGO del df_FILTRADO
+    # Por cada registro con TIPO = PRO o CDE, identificar registros con el mismo CODIGO del df_FILTRADO
     for _, registro in df_PRO.iterrows():
         codigo_filtrado = df_FILTRADO.loc[df_FILTRADO['CODIGO'] == registro['CODIGO']].reset_index().rename(columns={'index': 'NUM_REGISTRO'})
 
+            # if registro['CODIGO'] == '036' and (registro['TIPO'] == 'CDE' or registro['TIPO'] == 'PRO'):
+            #     print(f"Registro PRO encontrado para CODIGO 036: {registro.to_dict()}")
+            #     print(f"Registros filtrados para CODIGO 036: {codigo_filtrado.to_dict(orient='records')}")
+
         registros_con_fecha = codigo_filtrado[
-            (codigo_filtrado['INICIO DE PERIODO'] <= registro['INICIO DE PERIODO']) &
-            (codigo_filtrado['FIN DE PERIODO'] >= registro['INICIO DE PERIODO'])
+            (codigo_filtrado['INICIO DE CALCULO'] <= registro['INICIO DE PERIODO']) &
+            (codigo_filtrado['FIN DE CALCULO'] >= registro['INICIO DE PERIODO'])
         ]
         if not registros_con_fecha.empty:
             for _, matched in registros_con_fecha.iterrows():
@@ -59,14 +63,8 @@ def agregar_promociones(df_1, df_2):
                 if num_reg in df_FILTRADO.index:
                     df_FILTRADO.loc[num_reg, 'TIPO2'] = registro['TIPO']
                     df_FILTRADO.loc[num_reg, 'FIN DE CALCULO'] = pd.to_datetime(registro['INICIO DE PERIODO'], errors='coerce') - pd.to_timedelta(1, unit='D')
-                    nuevos_promocion.append(registro.to_dict())
-
-    if nuevos_promocion:
-        df_PROMO = pd.DataFrame(nuevos_promocion)
-        df_FILTRADO = pd.concat([df_FILTRADO, df_PROMO], ignore_index=True, sort=False)
-    else:
-        print("No se encontraron coincidencias PRO en df_FILTRADO.")
-        return False
+        
+        df_FILTRADO = pd.concat([df_FILTRADO, registro.to_frame().T], ignore_index=True, sort=False)
 
     return df_FILTRADO
 
@@ -207,7 +205,7 @@ def registro_por_docente(df):
         'AÑOS': 'sum',
         'MESES': 'sum',
         'DIAS': 'sum',
-        'TIPO2': 'first'
+        'TIPO2': 'last'
     }).reset_index()
 
     # Eliminar TIPO2 si no tiene valores
@@ -224,3 +222,8 @@ def registro_por_docente(df):
 
     return resultado
 
+def agrega_status(df):
+    # STATUS = 'Activo' si la fecha de fin de cálculo es mayor o igual a la fecha actual, de lo contrario 'Inactivo'
+    fecha_actual = pd.Timestamp.now().normalize()
+    df['STATUS'] = df['FIN DE CALCULO'].apply(lambda x: 'Activo' if x >= fecha_actual else 'Inactivo')
+    return df

@@ -25,13 +25,16 @@ def main(ruta, archivo, hoja):
 
     df = trait.agrega_fechas_calculo(df)
 
-    # Filtra registros con TIPO = PRO 
-    df_PRO = df[df['TIPO'].isin(['PRO'])].copy()
+    # Filtra registros con TIPO = PRO y CDE, ordenado por CODIGO y por INICIO DE PERIODO
+    df_PRO = df[df['TIPO'].isin(['PRO', 'CDE'])].copy()
+    df_PRO = df_PRO.sort_values(by=['CODIGO', 'INICIO DE PERIODO'])
+    # print("Registros con TIPO = PRO y CDE:")
+    # print(df_PRO)
 
     # Eliminar registros con TIPO = REN, CES, REA, NRA, LIC, CDE, PRO
     df_FILTRADO = df[~df['TIPO'].isin(['REN', 'CES', 'REA', 'NRA', 'LIC', 'CDE', 'PRO'])].copy()
 
-    df_1 = trait.agregar_promociones(df_FILTRADO, df_PRO)
+    df_1 = trait.agregar_pro_cde(df_FILTRADO, df_PRO)
     if df_1.empty:
         return "Error, revisar registros TIPO: PRO."
 
@@ -54,9 +57,12 @@ def main(ruta, archivo, hoja):
     df_1.to_excel(output_path, sheet_name='salida', index=False)
 
     df_2 = trait.registro_por_docente(df_1)
+
+    df = trait.agrega_status(df_2)
+
     # Grabar nueva hoja en el mismo archivo Excel con los datos procesados
     with pd.ExcelWriter(output_path, engine='openpyxl', mode='a') as writer:
-        df_2.to_excel(writer, sheet_name='por docente', index=False)
+        df.to_excel(writer, sheet_name='por docente', index=False)
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:

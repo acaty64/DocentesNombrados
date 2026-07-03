@@ -63,7 +63,7 @@ def test_calcular_duracion():
     assert df.iloc[3]['MESES'] == 9
     assert df.iloc[3]['DIAS'] == 26
 
-def test_agregar_promociones():
+def test_agregar_promociones_y_cambios_de_dedicacion():
     # Crear un DataFrame de prueba con datos de tipo ING y RAT
     data_1 = [
         {
@@ -71,37 +71,91 @@ def test_agregar_promociones():
             'CODIGO': 1,
             'RESOLUCION': 'Resolucion de Concurso de Catedra',
             'CATEGORIA': 'Auxiliar',
+            'DEDICACION': 'Tiempo completo',
             'INICIO DE PERIODO': pd.Timestamp('2020-01-01 00:00:00'),
             'FIN DE PERIODO': pd.Timestamp('2023-12-31 00:00:00'),
+            'INICIO DE CALCULO': pd.Timestamp('2020-01-01 00:00:00'),
+            'FIN DE CALCULO': pd.Timestamp('2023-12-31 00:00:00'),
         },
         {
             'TIPO': 'RAT',
             'CODIGO': 1,
             'RESOLUCION': 'Resolucion de Ratificacion',
             'CATEGORIA': 'Auxiliar',
+            'DEDICACION': 'Tiempo completo',
             'INICIO DE PERIODO': pd.Timestamp('2024-01-01 00:00:00'),
             'FIN DE PERIODO': pd.Timestamp('2026-12-31 00:00:00'),
+            'INICIO DE CALCULO': pd.Timestamp('2024-01-01 00:00:00'),
+            'FIN DE CALCULO': pd.Timestamp('2026-12-31 00:00:00'),
+        },
+        {
+            'TIPO': 'ING',
+            'CODIGO': 2,
+            'RESOLUCION': 'Resolucion de Concurso de Catedra',
+            'CATEGORIA': 'Auxiliar',
+            'DEDICACION': 'Tiempo completo',
+            'INICIO DE PERIODO': pd.Timestamp('2020-01-01 00:00:00'),
+            'FIN DE PERIODO': pd.Timestamp('2023-12-31 00:00:00'),
+            'INICIO DE CALCULO': pd.Timestamp('2020-01-01 00:00:00'),
+            'FIN DE CALCULO': pd.Timestamp('2023-12-31 00:00:00'),
+        },
+        {
+            'TIPO': 'RAT',
+            'CODIGO': 2,
+            'RESOLUCION': 'Resolucion de Ratificacion',
+            'CATEGORIA': 'Auxiliar',
+            'DEDICACION': 'Tiempo parcial',
+            'INICIO DE PERIODO': pd.Timestamp('2024-12-02 00:00:00'),
+            'FIN DE PERIODO': pd.Timestamp('2026-12-31 00:00:00'),
+            'INICIO DE CALCULO': pd.Timestamp('2024-12-02 00:00:00'),
+            'FIN DE CALCULO': pd.Timestamp('2026-12-31 00:00:00'),
         }
     ]
-    # Crea un Dataframe de prueba con datos tipo PRO
+    # Crea un Dataframe de prueba con datos tipo PRO Y CDE
     data_2 = [
         {
             'TIPO': 'PRO',
             'CODIGO': 1,
             'RESOLUCION': 'Resolucion de Promocion',
             'CATEGORIA': 'Asociado',
+            'DEDICACION': 'Tiempo completo',
             'INICIO DE PERIODO': pd.Timestamp('2024-02-15 00:00:00'),
             'FIN DE PERIODO': pd.Timestamp('2024-06-30 00:00:00'),
+            'INICIO DE CALCULO': pd.Timestamp('2024-02-15 00:00:00'),
+            'FIN DE CALCULO': pd.Timestamp('2024-06-30 00:00:00'),
+        },
+        {
+            'TIPO': 'CDE',
+            'CODIGO': 2,
+            'RESOLUCION': 'Resolucion de Cambio de Dedicacion',
+            'CATEGORIA': 'Asociado',
+            'DEDICACION': 'Tiempo parcial',
+            'INICIO DE PERIODO': pd.Timestamp('2023-12-01 00:00:00'),
+            'FIN DE PERIODO': pd.Timestamp('2024-12-01 00:00:00'),
+            'INICIO DE CALCULO': pd.Timestamp('2023-12-01 00:00:00'),
+            'FIN DE CALCULO': pd.Timestamp('2024-12-01 00:00:00'),
         }
     ]
+
+    # Crea los DataFrames a partir de los datos de prueba
+    # Registros de tipo ING y RAT
     df_1 = pd.DataFrame(data_1)
+    # Registros de tipo PRO y CDE
     df_2 = pd.DataFrame(data_2)
 
-    df = trait.agregar_promociones(df_1, df_2)
+    df = trait.agregar_pro_cde(df_1, df_2)
 
+    #print(df)
+    assert df.iloc[1]['CODIGO'] == 1
     assert df.iloc[1]['FIN DE CALCULO'] == pd.Timestamp('2024-02-14 00:00:00')
-    assert df.iloc[2][df_2.columns].to_dict() == df_2.iloc[0].to_dict()
+    assert df.iloc[1]['TIPO2'] == 'PRO'
+    assert df.iloc[2]['CODIGO'] == 2
+    assert df.iloc[2]['FIN DE CALCULO'] == pd.Timestamp('2023-11-30 00:00:00')
+    assert df.iloc[2]['TIPO2'] == 'CDE'
+    assert df.iloc[3]['FIN DE CALCULO'] == pd.Timestamp('2026-12-31 00:00:00')
 
+    # assert df.iloc[2][df_2.columns].to_dict() == df_2.iloc[0][0].to_dict()
+    # assert df.iloc[2][df_2.columns].to_dict() == df_2.iloc[0][0].to_dict()
 
 def test_cambio_fin_de_calculo():
     # Crear un DataFrame de prueba con datos de tipo ING y RAT
