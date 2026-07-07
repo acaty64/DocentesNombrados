@@ -53,6 +53,8 @@ def main(ruta, archivo, hoja):
     # Calcula duración de cada registro
     df_1[['AÑOS', 'MESES', 'DIAS']] = df_1.apply(trait.calcular_duracion, axis=1)
 
+    df_1 = df_1.sort_values(by=['CODIGO', 'INICIO DE PERIODO']).reset_index(drop=True)
+
     output_path = os.path.join(output_dir, 'reporte.xlsx')
     df_1.to_excel(output_path, sheet_name='salida', index=False)
 
